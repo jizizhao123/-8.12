@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: yanda
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/db?serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
+    hikari:
+      minimum-idle: 8
+      maximum-pool-size: 20
+logging:
+  level:
+    com.neutech.mapper: debug
+

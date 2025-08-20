@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neutech.mapper.AnnouncementMapper">
+
+    <!-- 查询所有公告及其用户信息 -->
+    <select id="selectAllAnnouncementsWithUserInfo" resultType="com.neutech.entity.Announcement">
+        SELECT a.*, u.name as userName, u.major as userMajor, u.role as userRole
+        FROM announcement a
+                 LEFT JOIN users u ON a.number = u.number
+        ORDER BY a.id DESC
+    </select>
+
+    <!-- 根据ID查询公告及其用户信息 -->
+    <select id="selectAnnouncementWithUserInfoById" parameterType="java.lang.Integer" resultType="com.neutech.entity.Announcement">
+        SELECT a.*, u.name as userName, u.major as userMajor, u.role as userRole
+        FROM announcement a
+                 LEFT JOIN users u ON a.number = u.number
+        WHERE a.id = #{id}
+    </select>
+
+    <!-- 分页查询公告列表 -->
+    <select id="selectAnnouncementsByPage" resultType="com.neutech.entity.Announcement">
+        SELECT a.*, u.name as userName, u.major as userMajor, u.role as userRole
+        FROM announcement a
+                 LEFT JOIN users u ON a.number = u.number
+        ORDER BY a.id DESC
+    </select>
+
+</mapper>
