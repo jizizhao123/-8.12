@@ -18,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -154,4 +156,51 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     public Integer getPersonalRanking(Integer userId) {
         return this.baseMapper.getPersonalRanking(userId);
     }
+    @Override
+    public Users getByNumber(String number) {
+        QueryWrapper<Users> wrapper = new QueryWrapper<>();
+        wrapper.eq("number", number);
+        return this.getOne(wrapper);
+    }
+    @Override
+    public void addTagToUser(Integer userId, String competitionName, String awardLevel, String awardRank) {
+        // 构造标签格式: competition_name+award_level+award_rank
+        String tag = competitionName + "+" + awardLevel + "+" + awardRank;
+
+        // 获取用户现有标签
+        Users user = this.getById(userId);
+        String existingTags = user.getTags();
+
+        // 如果用户已有标签，则追加新标签（避免重复）
+        if (existingTags != null && !existingTags.isEmpty()) {
+            List<String> tagList = new ArrayList<>(Arrays.asList(existingTags.split(",")));
+            if (!tagList.contains(tag)) {
+                tagList.add(tag);
+                user.setTags(String.join(",", tagList));
+            }
+        } else {
+            user.setTags(tag);
+        }
+
+        // 更新用户信息
+        this.updateById(user);
+    }
+
+    /**
+     * 获取用户标签列表
+     * @param userId 用户ID
+     * @return 标签列表
+     */
+    @Override
+    public List<String> getUserTags(Integer userId) {
+        Users user = this.getById(userId);
+        String tags = user.getTags();
+
+        if (tags != null && !tags.isEmpty()) {
+            return Arrays.asList(tags.split(","));
+        }
+
+        return new ArrayList<>();
+    }
+
 }

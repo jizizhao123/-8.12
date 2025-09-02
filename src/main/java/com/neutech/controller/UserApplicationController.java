@@ -1,4 +1,5 @@
 // src/main/java/com/neutech/controller/UserApplicationController.java
+
 package com.neutech.controller;
 
 import com.neutech.dto.UserApplicationDTO;
@@ -64,6 +65,7 @@ public class UserApplicationController {
             application.setTypeId(dto.getTypeId());
             application.setDescription(dto.getDescription().trim());
             application.setImageUrl(dto.getImageUrl().trim());
+            application.setCompetitionName(dto.getCompetitionName()); // 设置比赛名称
             application.setStatus("待审核"); // 初始状态
             application.setCreateTime(LocalDateTime.now());
             application.setUpdateTime(LocalDateTime.now());

@@ -71,6 +71,10 @@ public class Users implements Serializable {
 
     private String avatarUrl;
 
+    private String introduction;
+
+    private String tags;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;

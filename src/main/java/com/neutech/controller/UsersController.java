@@ -8,10 +8,7 @@ import com.neutech.util.NeutechUtil;
 import com.neutech.vo.ResultJson;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
@@ -57,6 +54,26 @@ public class UsersController {
         String avatarUrl = usersService.uploadAvatar(file, userId);
         return ResultJson.success(avatarUrl);
     }
+    @PostMapping("/updateIntroduction")
+    public ResultJson<String> updateIntroduction(String introduction) {
+        try {
+            Users currentUser = getCurrentUserFromToken();
+            if (currentUser == null) {
+                return ResultJson.failed("用户未登录或token无效");
+            }
+
+            Users user = new Users();
+            user.setId(currentUser.getId());
+            user.setIntroduction(introduction);
+            usersService.updateById(user);
+
+            return ResultJson.success("个人简介更新成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultJson.failed("个人简介更新失败");
+        }
+    }
+
 
     @PostMapping("/register")
     ResultJson<String> register(Users user) {
@@ -88,7 +105,7 @@ public class UsersController {
     }
 
     @GetMapping("/profile")
-    public ResultJson<Users> getUserProfile() {
+    public ResultJson<Map<String, Object>> getUserProfile() {
         try {
             // 从请求上下文中获取当前用户信息
             Users currentUser = getCurrentUserFromToken();
@@ -96,13 +113,22 @@ public class UsersController {
                 return ResultJson.failed("用户未登录或token无效");
             }
 
-            // 返回当前用户信息
-            return ResultJson.success(currentUser);
+            // 获取用户标签
+            List<String> tags = usersService.getUserTags(currentUser.getId());
+
+            // 构造返回结果
+            Map<String, Object> result = new HashMap<>();
+            result.put("user", currentUser);
+            result.put("tags", tags);
+
+            // 返回当前用户信息和标签
+            return ResultJson.success(result);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultJson.failed("获取用户信息失败");
         }
     }
+
 
     // 从token中获取当前用户信息的辅助方法
     // 从token中获取当前用户信息的辅助方法
@@ -129,6 +155,46 @@ public class UsersController {
         }
         return null;
     }
+    @PostMapping("/users/{userId}/addTag")
+    public ResultJson<String> addUserTag(@PathVariable Integer userId,
+                                         @RequestParam String competitionName,
+                                         @RequestParam String awardLevel,
+                                         @RequestParam String awardRank) {
+        try {
+            // 验证管理员权限（可以从 getCurrentUserFromToken 复用逻辑）
+            Users currentUser = getCurrentUserFromToken();
+            if (currentUser == null || !currentUser.getIsAdmin()) {
+                return ResultJson.failed("权限不足");
+            }
+
+            usersService.addTagToUser(userId, competitionName, awardLevel, awardRank);
+            return ResultJson.success("标签添加成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultJson.failed("标签添加失败");
+        }
+    }
+
+    /**
+     * 获取用户标签
+     */
+    @GetMapping("/users/{userId}/tags")
+    public ResultJson<List<String>> getUserTags(@PathVariable Integer userId) {
+        try {
+            // 管理员权限验证
+            Users currentUser = getCurrentUserFromToken();
+            if (currentUser == null || !currentUser.getIsAdmin()) {
+                return ResultJson.failed("权限不足");
+            }
+
+            List<String> tags = usersService.getUserTags(userId);
+            return ResultJson.success(tags);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultJson.failed("获取标签失败");
+        }
+    }
+
 
 
 }

@@ -1,4 +1,5 @@
 // src/main/java/com/neutech/controller/AnnouncementController.java
+
 package com.neutech.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -80,6 +81,39 @@ public class AnnouncementController {
             return ResultJson.failed("公告不存在");
         }
         return ResultJson.success(announcement);
+    }
+
+    // 新增：获取发布者详细信息
+    @GetMapping("/publisher/info/{number}")
+    public ResultJson<Users> getPublisherInfo(@PathVariable String number) {
+        try {
+            // 添加调试信息
+            System.out.println("请求获取发布者信息，用户编号: " + number);
+
+            // 检查参数
+            if (number == null || number.trim().isEmpty()) {
+                System.out.println("用户编号为空");
+                return ResultJson.failed("用户编号不能为空");
+            }
+
+            // 根据用户编号获取用户信息
+            Users user = usersService.getByNumber(number.trim());
+            System.out.println("查询到的用户信息: " + user);
+
+            if (user == null) {
+                System.out.println("未找到编号为 " + number + " 的用户");
+                return ResultJson.failed("用户不存在");
+            }
+
+            // 隐藏敏感信息（如密码）
+            user.setPassword(null);
+
+            return ResultJson.success(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("获取发布者信息异常: " + e.getMessage());
+            return ResultJson.failed("获取发布者信息失败：" + e.getMessage());
+        }
     }
 
     // 从token中获取当前用户信息的辅助方法

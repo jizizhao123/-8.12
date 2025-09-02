@@ -23,4 +23,13 @@ public interface UsersService extends IService<Users> {
     void register(Users user);
     String uploadAvatar(MultipartFile file, Integer userId);
     Integer getPersonalRanking(Integer userId);
+    Users getByNumber(String number);
+    void addTagToUser(Integer userId, String competitionName, String awardLevel, String awardRank);
+
+    /**
+     * 获取用户标签
+     * @param userId 用户ID
+     * @return 标签列表
+     */
+    List<String> getUserTags(Integer userId);
 }

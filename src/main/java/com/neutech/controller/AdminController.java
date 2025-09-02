@@ -110,4 +110,5 @@ public class AdminController {
             return ResultJson.failed("查询失败：" + e.getMessage());
         }
     }
+
 }

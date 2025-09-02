@@ -1,4 +1,5 @@
 // src/main/java/com/neutech/util/NeutechUtil.java
+
 package com.neutech.util;
 
 import com.auth0.jwt.JWT;
@@ -20,6 +21,8 @@ public class NeutechUtil {
                 .withClaim("role", users.getRole())
                 .withClaim("isAdmin", users.getIsAdmin())
                 .withClaim("avatarUrl", users.getAvatarUrl())
+                .withClaim("introduction", users.getIntroduction())
+                .withClaim("tags", users.getTags()) // 添加tags字段
                 .sign(Algorithm.HMAC256(KEY));
     }
 
@@ -53,6 +56,14 @@ public class NeutechUtil {
 
             String avatarUrl = verify.getClaim("avatarUrl").asString();
             if (avatarUrl != null) user.setAvatarUrl(avatarUrl);
+
+            // 添加introduction字段处理
+            String introduction = verify.getClaim("introduction").asString();
+            if (introduction != null) user.setIntroduction(introduction);
+
+            // 添加tags字段处理
+            String tags = verify.getClaim("tags").asString();
+            if (tags != null) user.setTags(tags);
 
             return user;
         } catch (Exception e) {

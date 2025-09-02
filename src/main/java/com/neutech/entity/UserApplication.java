@@ -40,4 +40,6 @@ public class UserApplication implements Serializable {
     private LocalDateTime createTime;
 
     private LocalDateTime updateTime;
+
+    private String competitionName;
 }

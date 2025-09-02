@@ -8,4 +8,5 @@ public class UserApplicationDTO {
     private Long typeId;
     private String description;
     private String imageUrl;
+    private String competitionName;
 }
